@@ -1,8 +1,5 @@
 use crate::Terminal;
-use std::io::{self, stdout, Write};
 use termion::event::Key;
-use termion::input::TermRead;
-use termion::raw::IntoRawMode;
 
 pub struct Editor {
     should_quit: bool,
@@ -11,8 +8,6 @@ pub struct Editor {
 
 impl Editor {
     pub fn run(&mut self) {
-        let _stdout = stdout().into_raw_mode().unwrap();
-
         loop {
             if let Err(error) = self.refresh_screen() {
                 die(&error);
