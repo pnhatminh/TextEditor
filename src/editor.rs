@@ -1,3 +1,4 @@
+use crate::Terminal;
 use std::io::{self, stdout, Write};
 use termion::event::Key;
 use termion::input::TermRead;
@@ -5,6 +6,7 @@ use termion::raw::IntoRawMode;
 
 pub struct Editor {
     should_quit: bool,
+    terminal: Terminal,
 }
 
 impl Editor {
@@ -26,25 +28,25 @@ impl Editor {
 
     pub fn default() -> Self {
         Self{
-            should_quit: false
+            should_quit: false,
+            terminal: Terminal::default().expect("Failed to initialize terminal")
         }
     }
 
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
-        // check https://www.flenker.blog/hecto-chapter-3/ , `Clear the screen` section for references of the binary code
-        // print!("\x1b[2J");
-        print!("{}{}", termion::clear::All, termion::cursor::Goto(1, 1));
+        Terminal::clear_screen();
+        Terminal::cursor_position(0, 0);
         if self.should_quit {
             println!("Goodbye.\r");
         } else {
             self.draw_rows();
-            print!("{}", termion::cursor::Goto(1, 1));
+            Terminal::cursor_position(0, 0);
         }
-        io::stdout().flush()
+        Terminal::flush()
     }
 
     fn process_keypress(&mut self) -> Result<(), std::io::Error> {
-        let pressed_key = read_key()?;
+        let pressed_key = Terminal::read_key()?;
         match pressed_key {
             Key::Ctrl('x') => self.should_quit = true,
             Key::Char(c) => {
@@ -60,21 +62,13 @@ impl Editor {
     }
 
     fn draw_rows(&self) {
-        for _ in 0..24 {
+        for _ in 0..self.terminal.size().height - 1 {
             println!("~\r");
         }
     }
 }
 
-fn read_key() -> Result<Key, std::io::Error> {
-    loop {
-        if let Some(key) = io::stdin().lock().keys().next() {
-            return key;
-        }
-    }
-}
-
 fn die(e: &std::io::Error) {
-    print!("{}", termion::clear::All);
+    Terminal::clear_screen();
     panic!("{}", e);
 }
