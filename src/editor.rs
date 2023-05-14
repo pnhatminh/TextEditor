@@ -25,7 +25,7 @@ impl Editor {
                     },
                     _ => println!("{:?}\r", key)
                 }
-                Err(err) => die(err),
+                Err(err) => die(&err),
             }
         }
     }
@@ -35,6 +35,6 @@ impl Editor {
     }
 }
 
-fn die(e: std::io::Error) {
+fn die(e: &std::io::Error) {
     panic!("{}", e);
 }
