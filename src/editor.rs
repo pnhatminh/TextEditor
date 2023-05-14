@@ -13,6 +13,7 @@ impl Editor {
                 die(&error);
             }
             if self.should_quit {
+                Terminal::clear_screen();
                 break;
             }
             if let Err(error) = self.process_keypress() {
@@ -58,6 +59,7 @@ impl Editor {
 
     fn draw_rows(&self) {
         for _ in 0..self.terminal.size().height - 1 {
+            Terminal::clear_current_line();
             println!("~\r");
         }
     }
