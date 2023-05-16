@@ -5,8 +5,9 @@ mod document;
 mod row;
 pub use document::Document;
 pub use row::Row;
-use editor::Editor;
 pub use terminal::Terminal;
+pub use editor::Position;
+use editor::Editor;
 fn main() {
     Editor::default().run();
 }
