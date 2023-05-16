@@ -49,7 +49,6 @@ impl Editor {
                 die(&error);
             }
             if self.should_quit {
-                Terminal::clear_screen();
                 break;
             }
             if let Err(error) = self.process_keypress() {
@@ -85,9 +84,10 @@ impl Editor {
     }
 
     fn refresh_screen(&self) -> Result<(), std::io::Error> {
-        Terminal::clear_screen();
+        Terminal::cursor_hide();
         Terminal::cursor_position(&Position::default());
         if self.should_quit {
+            Terminal::clear_screan();
             println!("Goodbye.\r");
         } else {
             self.draw_rows();
@@ -98,6 +98,7 @@ impl Editor {
                 y: self.cursor_position.y.saturating_sub(self.offset.y)
             });
         }
+        Terminal::cursor_show();
         Terminal::flush()
     }
 
@@ -133,7 +134,10 @@ impl Editor {
                 self.should_quit = true
             },
             Key::Ctrl('s') => self.save(),
-            Key::Char(c) => self.document.insert(&self.cursor_position, c),
+            Key::Char(c) => {
+                self.document.insert(&self.cursor_pointer, c);
+                self.move_cursor(Key::Right);
+            },
             Key::Delete => self.document.delete(&self.cursor_position),
             Key::Backspace => {
                 if self.cursor_position.x > 0 || self.cursor_position.y > 0 {
@@ -189,7 +193,6 @@ impl Editor {
     fn move_cursor(&mut self, key: Key) {
         let terminal_height = self.terminal.size().height as usize;
         let Position{mut y, mut x} = self.cursor_position;
-        let size = self.terminal.size();
         let height = size.height.saturating_sub(1) as usize;
         let mut width = if let Some(row) = self.document.row(y) {
             row.len()
@@ -201,7 +204,7 @@ impl Editor {
             Key::Up => y = y.saturating_sub(1),
             Key::Down => {
                 if y < height {
-                    y = y.saturating_add(1)
+                    y = y.saturating_add(1);
                 }
             }
             Key::Left => {
@@ -230,14 +233,14 @@ impl Editor {
                 } else {
                     0
                 }
-            },
+            }
             Key::PageDown => {
                 y = if y.saturating_add(terminal_height) < height {
-                    y + terminal_height as usize
+                    y.saturating_add(terminal_height)
                 } else {
                     height
                 }
-            },
+            }
             Key::Home => x = 0,
             Key::End => x = width,
             _ => ()
@@ -342,7 +345,7 @@ impl Editor {
         status = format!("{}{}", status, line_indicator);
         status.truncate(width);
         Terminal::set_bg_color(STATUS_BG_COLOR);
-        Terminal::set_bg_color(STATUS_FG_COLOR);
+        Terminal::set_fg_color(STATUS_FG_COLOR);
         println!("{}\r", status);
         Terminal::reset_fg_color();
         Terminal::reset_bg_color();
