@@ -87,7 +87,7 @@ impl Editor {
         Terminal::cursor_hide();
         Terminal::cursor_position(&Position::default());
         if self.should_quit {
-            Terminal::clear_screan();
+            Terminal::clear_screen();
             println!("Goodbye.\r");
         } else {
             self.draw_rows();
@@ -135,7 +135,7 @@ impl Editor {
             },
             Key::Ctrl('s') => self.save(),
             Key::Char(c) => {
-                self.document.insert(&self.cursor_pointer, c);
+                self.document.insert(&self.cursor_position, c);
                 self.move_cursor(Key::Right);
             },
             Key::Delete => self.document.delete(&self.cursor_position),
@@ -193,7 +193,7 @@ impl Editor {
     fn move_cursor(&mut self, key: Key) {
         let terminal_height = self.terminal.size().height as usize;
         let Position{mut y, mut x} = self.cursor_position;
-        let height = size.height.saturating_sub(1) as usize;
+        let height = self.document.len();
         let mut width = if let Some(row) = self.document.row(y) {
             row.len()
         } else {
