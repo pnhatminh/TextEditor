@@ -58,7 +58,7 @@ impl Editor {
 
     pub fn default() -> Self {
         let args: Vec<String> = env::args().collect();
-        let mut initial_status = String::from("HELP: Ctrl-S = save | Ctrl-Q = quit");
+        let mut initial_status = String::from("HELP: Ctrl-S = save | Ctrl-X = quit");
 
         let document = if let Some(file_name) = args.get(1) {
             let doc = Document::open(file_name);
@@ -125,7 +125,7 @@ impl Editor {
             Key::Ctrl('x') => {
                 if self.quit_times > 0 && self.document.is_dirty() {
                     self.status_message = StatusMessage::from(format!(
-                        "WARNING! File has unsaved changes. Press Ctrl-Q {} more times to quit.",
+                        "WARNING! File has unsaved changes. Press Ctrl-X {} more times to quit.",
                         self.quit_times
                     ));
                     self.quit_times -= 1;
