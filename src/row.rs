@@ -4,14 +4,14 @@ use unicode_segmentation::UnicodeSegmentation;
 #[derive(Default)]
 pub struct Row {
     string: String,
-    len: usize
+    len: usize,
 }
 
 impl From<&str> for Row {
     fn from(slice: &str) -> Self {
         Self {
             string: String::from(slice),
-            len: slice.graphemes(true).count()
+            len: slice.graphemes(true).count(),
         }
     }
 }
@@ -25,7 +25,7 @@ impl Row {
         for grapheme in self.string[..]
             .graphemes(true)
             .skip(start)
-            .take(end - start) 
+            .take(end - start)
         {
             if grapheme == "\t" {
                 result.push_str(" ");
@@ -39,7 +39,7 @@ impl Row {
     pub fn len(&self) -> usize {
         self.string[..].graphemes(true).count()
     }
-    
+
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
@@ -111,5 +111,4 @@ impl Row {
     pub fn as_bytes(&self) -> &[u8] {
         self.string.as_bytes()
     }
-
 }

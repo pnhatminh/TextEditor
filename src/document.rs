@@ -1,5 +1,5 @@
-use crate::Row;
 use crate::Position;
+use crate::Row;
 use std::fs;
 use std::io::{Error, Write};
 
@@ -17,11 +17,11 @@ impl Document {
         for value in contents.lines() {
             rows.push(Row::from(value));
         }
-        Ok(Self { 
+        Ok(Self {
             rows,
             file_name: Some(filename.to_string()),
-            dirty: false
-         })
+            dirty: false,
+        })
     }
 
     pub fn row(&self, index: usize) -> Option<&Row> {

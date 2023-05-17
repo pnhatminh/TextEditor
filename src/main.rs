@@ -1,4 +1,4 @@
-#![warn(clippy::all, clippy::pedantic, clippy::restriction)]            
+#![warn(clippy::all, clippy::pedantic, clippy::restriction)]
 #![allow(
     clippy::missing_docs_in_private_items,
     clippy::implicit_return,
@@ -7,15 +7,15 @@
     clippy::wildcard_enum_match_arm,
     clippy::else_if_without_else
 )]
-mod editor;
-mod terminal;
 mod document;
+mod editor;
 mod row;
+mod terminal;
 pub use document::Document;
+use editor::Editor;
+pub use editor::Position;
 pub use row::Row;
 pub use terminal::Terminal;
-pub use editor::Position;
-use editor::Editor;
 fn main() {
     Editor::default().run();
 }
